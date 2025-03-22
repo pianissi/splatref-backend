@@ -1,5 +1,6 @@
 package com.splatref.splatrefbackend.service;
 
+import com.splatref.splatrefbackend.exceptions.WrongFileExtensionException;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +27,7 @@ public class FileServiceImpl implements FileService {
             String fileName = HexFormat.of().formatHex(md5.digest(file.getBytes())) + "." + fileExtension;
 
             if (!(fileExtension.equals("png") || fileExtension.equals("jpg"))) {
-                throw new IllegalArgumentException("Uploaded Image is of wrong filetype: " + fileName);
+                throw new WrongFileExtensionException("Uploaded Image is of wrong filetype: " + fileName);
             }
 
             // to get the file path

@@ -1,5 +1,6 @@
 package com.splatref.splatrefbackend.controllers;
 
+import com.splatref.splatrefbackend.exceptions.WrongFileExtensionException;
 import com.splatref.splatrefbackend.service.FileService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FilenameUtils;
@@ -30,12 +31,7 @@ public class FileController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFileHandler(@RequestPart MultipartFile file) throws IOException {
         String uploadedFileName;
-        try {
-            uploadedFileName = fileService.uploadFile(path, file);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-
+        uploadedFileName = fileService.uploadFile(path, file);
 
         return ResponseEntity.ok("File uploaded : " + uploadedFileName);
     }
@@ -49,7 +45,7 @@ public class FileController {
         } else if (fileExtension.equals("jpg")) {
             response.setContentType(MediaType.IMAGE_JPEG_VALUE);
         } else {
-            throw new IllegalArgumentException("Served file was not an image!");
+            throw new WrongFileExtensionException("Served file was not an image!");
         }
 
         StreamUtils.copy(resourceFile, response.getOutputStream());

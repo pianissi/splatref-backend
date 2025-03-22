@@ -2,6 +2,7 @@ package com.splatref.splatrefbackend.service;
 
 import com.splatref.splatrefbackend.dto.ImageDto;
 import com.splatref.splatrefbackend.entities.Image;
+import com.splatref.splatrefbackend.exceptions.FileExistsException;
 import com.splatref.splatrefbackend.repository.ImageRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,10 +36,16 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public ImageDto addImage(ImageDto imageDto, MultipartFile file) throws IOException {
         // 1 upload file
+
         String uploadedFileName = fileService.uploadFile(path, file);
+
+        if (Files.exists(Paths.get(path + File.separator + uploadedFileName))) {
+            throw new FileExistsException("File already exists!");
+        }
         // 2 set value of filename
         imageDto.setImageHash(FilenameUtils.getBaseName(uploadedFileName));
         imageDto.setImageExtension(FilenameUtils.getExtension(uploadedFileName));
+
         // 3 map dto to object
         Image image = new Image(
                 null,
