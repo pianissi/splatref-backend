@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    username: postgres
+    password: 12345678
+    url: jdbc:postgresql://localhost:5432/splatref-db
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+project:
+  images: images/
+
+base:
+  url: "http://localhost:8080"
