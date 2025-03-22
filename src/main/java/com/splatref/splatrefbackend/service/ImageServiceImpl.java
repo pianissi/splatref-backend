@@ -3,7 +3,7 @@ package com.splatref.splatrefbackend.service;
 import com.splatref.splatrefbackend.dto.ImageDto;
 import com.splatref.splatrefbackend.entities.Image;
 import com.splatref.splatrefbackend.exceptions.FileExistsException;
-import com.splatref.splatrefbackend.repository.ImageRepository;
+import com.splatref.splatrefbackend.repositories.ImageRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
