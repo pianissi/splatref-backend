@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/image")
+@CrossOrigin(origins = "*")
 public class ImageController {
 
     private final ImageService imageService;
@@ -29,7 +30,7 @@ public class ImageController {
         return new ResponseEntity<>(imageService.addImage(dto, file), HttpStatus.CREATED);
     }
 
-    private ImageDto convertToImageDto(String imageDtoObj) throws JsonProcessingException {
+    public static ImageDto convertToImageDto(String imageDtoObj) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(imageDtoObj, ImageDto.class);
     }
