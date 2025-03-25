@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Table(indexes = @Index(name = "hash_index", columnList = "imageHash", unique = true))
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,4 +23,5 @@ public class Image {
     @NotBlank(message = "Image must have an Extension")
     private String imageExtension;
 
+    private Integer referenceCount;
 }

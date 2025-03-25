@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ImageServiceImpl implements ImageService {
@@ -39,18 +40,46 @@ public class ImageServiceImpl implements ImageService {
 
         String uploadedFileName = fileService.uploadFile(path, file);
 
-        if (Files.exists(Paths.get(path + File.separator + uploadedFileName))) {
-            throw new FileExistsException("File already exists!");
-        }
         // 2 set value of filename
         imageDto.setImageHash(FilenameUtils.getBaseName(uploadedFileName));
         imageDto.setImageExtension(FilenameUtils.getExtension(uploadedFileName));
+
+        // first check if in db
+        Optional<Image> existingImage = imageRepository.findByImageHash(imageDto.getImageHash());
+        if (existingImage.isPresent()) {
+            // file exists!
+            Image image = existingImage.get();
+            Integer newReferenceCount = image.getReferenceCount() + 1;
+            Image newImage = new Image(
+                    image.getImageId(),
+                    image.getImageHash(),
+                    image.getImageExtension(),
+                    newReferenceCount
+            );
+
+            Image savedImage = imageRepository.save(newImage);
+            String imageUrl =  baseUrl + "/file/" + uploadedFileName;
+
+            ImageDto response = new ImageDto(
+                    savedImage.getImageId(),
+                    savedImage.getImageHash(),
+                    savedImage.getImageExtension(),
+                    imageUrl
+            );
+
+            return response;
+        }
+
+//        if (Files.exists(Paths.get(path + File.separator + uploadedFileName))) {
+//            throw new FileExistsException("File already exists!");
+//        }
 
         // 3 map dto to object
         Image image = new Image(
                 null,
                 imageDto.getImageHash(),
-                imageDto.getImageExtension()
+                imageDto.getImageExtension(),
+                1
         );
         // 4 save object
         Image savedImage = imageRepository.save(image);
@@ -105,7 +134,20 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public String deleteImage(Integer imageId) throws IOException {
         Image image = imageRepository.findById(imageId).orElseThrow(() -> new RuntimeException("Image not found with id: " + imageId));
+        // check reference count
+        Integer newReferenceCount = image.getReferenceCount() - 1;
+
         Integer id = image.getImageId();
+        if (newReferenceCount > 0) {
+            Image newImage = new Image(
+                    image.getImageId(),
+                    image.getImageHash(),
+                    image.getImageExtension(),
+                    image.getReferenceCount() + 1
+            );
+            imageRepository.save(newImage);
+            return "Image unreferenced with id: " + id + ", reference count: " + newReferenceCount;
+        }
 
         Files.deleteIfExists(Paths.get(path + File.separator + image.getImageHash() + "." + image.getImageExtension()));
 
