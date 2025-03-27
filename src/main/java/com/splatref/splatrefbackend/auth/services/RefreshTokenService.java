@@ -35,7 +35,8 @@ public class RefreshTokenService {
                     .user(user)
                     .build();
 
-            refreshTokenRepository.save(refreshToken);
+            user.setRefreshToken(refreshToken);
+            userRepository.save(user);
         }
 
         return refreshToken;
@@ -51,5 +52,12 @@ public class RefreshTokenService {
         }
 
         return refToken;
+    }
+
+    public String revokeRefreshToken(RefreshToken refreshToken) {
+        User user = refreshToken.getUser();
+        refreshTokenRepository.delete(refreshToken);
+
+        return "User logged out: "+ user.getHandle();
     }
 }

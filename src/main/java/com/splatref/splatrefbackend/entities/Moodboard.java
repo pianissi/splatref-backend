@@ -8,12 +8,14 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 public class Moodboard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,13 +23,18 @@ public class Moodboard {
 
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "image_id")
-    private Image thumbnail;
-
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
-    private JsonNode data;
+    private JsonNode thumbnail;
+
+    private byte[] data;
+//    @ManyToOne
+//    @JoinColumn(name = "image_id")
+//    private Image thumbnail;
+
+//    @Type(JsonType.class)
+//    @Column(columnDefinition = "jsonb")
+//    private JsonNode data;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

@@ -26,6 +26,6 @@ public class RefreshToken {
     @Column(nullable = false)
     private Instant expirationTime;
 
-    @OneToOne
+    @OneToOne(mappedBy = "refreshToken")
     private User user;
 }

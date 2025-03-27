@@ -55,4 +55,11 @@ public class AuthController {
                 .email(user.getEmail())
                 .build());
     }
+
+    @DeleteMapping("/logout")
+    public ResponseEntity<String> logout(@CookieValue(value = "refreshToken") String cookieRefreshToken) {
+        RefreshToken refreshToken = refreshTokenService.verifyRefreshToken(cookieRefreshToken);
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, "refreshToken=").body(refreshTokenService.revokeRefreshToken(refreshToken));
+    }
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.splatref.splatrefbackend.auth.entities.User;
 import com.splatref.splatrefbackend.dto.ImageDto;
 import com.splatref.splatrefbackend.dto.MoodboardDto;
+import com.splatref.splatrefbackend.dto.MoodboardMiniDto;
 import com.splatref.splatrefbackend.service.MoodboardService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,13 +34,10 @@ public class MoodboardController {
     }
 
     @PostMapping("/add-moodboard")
-    public ResponseEntity<MoodboardDto> addMoodboardHandler(@RequestPart String moodboardDto,
-                                                            @RequestPart String thumbnailDto,
-                                                            @RequestPart MultipartFile thumbnail
-                                                            ) throws IOException {
+    public ResponseEntity<MoodboardDto> addMoodboardHandler(@RequestPart String moodboardDto) throws IOException {
         User user = getCurrentUser();
 
-        return new ResponseEntity<>(moodboardService.addMoodboard(convertToMoodboardDto(moodboardDto), ImageController.convertToImageDto(thumbnailDto), thumbnail, user.getUsername()), HttpStatus.CREATED);
+        return new ResponseEntity<>(moodboardService.addMoodboard(convertToMoodboardDto(moodboardDto), user.getUsername()), HttpStatus.CREATED);
     }
 
     public static MoodboardDto convertToMoodboardDto(String moodboardDtoObj) throws JsonProcessingException {
@@ -54,7 +52,7 @@ public class MoodboardController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<MoodboardDto>> getUserMoodboardHandler(Authentication authentication) {
+    public ResponseEntity<List<MoodboardMiniDto>> getUserMoodboardHandler(Authentication authentication) {
 //        User user = getCurrentUser();
         User user = (User) authentication.getPrincipal();
         return ResponseEntity.ok(moodboardService.getUserMoodboards(user.getUsername()));
@@ -62,13 +60,10 @@ public class MoodboardController {
 
     @PutMapping("/update-moodboard/{moodboardId}")
     public ResponseEntity<MoodboardDto> updateMoodboardHandler(@PathVariable Integer moodboardId,
-                                                               @RequestPart String moodboardDto,
-                                                               @RequestPart String thumbnailDto,
-                                                               @RequestPart MultipartFile thumbnail
-                                                               ) throws IOException {
+                                                               @RequestPart String moodboardDto) throws IOException {
         User user = getCurrentUser();
 
-        return ResponseEntity.ok(moodboardService.updateMoodboard(moodboardId, convertToMoodboardDto(moodboardDto), ImageController.convertToImageDto(thumbnailDto), thumbnail, user.getUsername()));
+        return ResponseEntity.ok(moodboardService.updateMoodboard(moodboardId, convertToMoodboardDto(moodboardDto), user.getUsername()));
     }
 
     @DeleteMapping("/delete/{moodboardId}")
@@ -76,5 +71,12 @@ public class MoodboardController {
         User user = getCurrentUser();
 
         return ResponseEntity.ok(moodboardService.deleteMoodboard(moodboardId, user.getUsername()));
+    }
+
+    @DeleteMapping("/delete/all")
+    public ResponseEntity<String> deleteMoodboardHandler() throws IOException {
+        User user = getCurrentUser();
+
+        return ResponseEntity.ok(moodboardService.deleteUserMoodboards(user.getUsername()));
     }
 }
