@@ -29,9 +29,9 @@ public class User implements UserDetails {
     @NotBlank(message = "The name field can't be blank")
     private String name;
 
-    @NotBlank(message = "The username field can't be blank")
+    @NotBlank(message = "The handle field can't be blank")
     @Column(unique = true)
-    private String username;
+    private String handle;
 
     @NotBlank(message = "The email field can't be blank")
     @Column(unique = true)
@@ -63,7 +63,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
     @Override

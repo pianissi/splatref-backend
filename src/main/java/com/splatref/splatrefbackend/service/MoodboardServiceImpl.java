@@ -42,7 +42,7 @@ public class MoodboardServiceImpl implements MoodboardService {
                 moodboardDto.getName(),
                 imageRepository.findByImageHash(imageDto.getImageHash()).orElseThrow(() -> new ImageNotFoundException("Thumbnail not found with hash: " + moodboardDto.getThumbnailHash())),
                 moodboardDto.getData(),
-                userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username))
+                userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username))
         );
 
         Moodboard savedMoodboard = moodboardRepository.save(moodboard);
@@ -62,7 +62,7 @@ public class MoodboardServiceImpl implements MoodboardService {
     @PreAuthorize("#username == authentication.principal.username")
     public MoodboardDto getMoodboard(Integer moodboardId, String username) {
         Moodboard moodboard = moodboardRepository.findById(moodboardId).orElseThrow(() -> new RuntimeException("Moodboard not found with id: " + moodboardId));
-        if (!userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username)).getUserId().equals(moodboard.getOwner().getUserId())) {
+        if (!userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username)).getUserId().equals(moodboard.getOwner().getUserId())) {
             throw new AccessDeniedException("Username: " + username + ", does not own moodboard with id: " + moodboardId);
         }
 
@@ -80,7 +80,7 @@ public class MoodboardServiceImpl implements MoodboardService {
     @PreAuthorize("#username == authentication.principal.username")
     public MoodboardDto updateMoodboard(Integer moodboardId, MoodboardDto moodboardDto, ImageDto thumbnailDto, MultipartFile thumbnail, String username) throws IOException {
         Moodboard oldMoodboard = moodboardRepository.findById(moodboardId).orElseThrow(() -> new RuntimeException("Moodboard not found with id: " + moodboardId));
-        if (userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username)).getUserId().equals(oldMoodboard.getOwner().getUserId())) {
+        if (userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username)).getUserId().equals(oldMoodboard.getOwner().getUserId())) {
             throw new AccessDeniedException("Username: " + username + ", does not own moodboard with id: " + moodboardId);
         }
 
@@ -114,7 +114,7 @@ public class MoodboardServiceImpl implements MoodboardService {
     @Override
 //    @PreAuthorize("#username == authentication.principal.username")
     public List<MoodboardDto> getUserMoodboards(String username) {
-        List<Moodboard> moodboards = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username)).getMoodboards();
+        List<Moodboard> moodboards = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username)).getMoodboards();
 
         List<MoodboardDto> moodboardDtos = new ArrayList<>();
 
@@ -136,7 +136,7 @@ public class MoodboardServiceImpl implements MoodboardService {
     @PreAuthorize("#username == authentication.principal.username")
     public String deleteMoodboard(Integer moodboardId, String username) throws IOException {
         Moodboard moodboard = moodboardRepository.findById(moodboardId).orElseThrow(() -> new RuntimeException("Moodboard not found with id: " + moodboardId));
-        if (!userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username)).getUserId().equals(moodboard.getOwner().getUserId())) {
+        if (!userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username)).getUserId().equals(moodboard.getOwner().getUserId())) {
             throw new AccessDeniedException("Username: " + username + ", does not own moodboard with id: " + moodboardId);
         }
 

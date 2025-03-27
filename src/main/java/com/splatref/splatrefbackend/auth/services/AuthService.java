@@ -27,7 +27,7 @@ public class AuthService {
         var user = User.builder()
                 .name(registerRequest.getName())
                 .email(registerRequest.getEmail())
-                .username(registerRequest.getUsername())
+                .handle(registerRequest.getHandle())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .role(UserRole.USER)
                 .build();
@@ -39,7 +39,7 @@ public class AuthService {
         return AuthResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken.getRefreshToken())
-                .username(savedUser.getUsername())
+                .handle(savedUser.getHandle())
                 .email(savedUser.getEmail())
                 .build();
     }
@@ -59,7 +59,7 @@ public class AuthService {
         return AuthResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken.getRefreshToken())
-                .username(user.getUsername())
+                .handle(user.getHandle())
                 .email(user.getEmail())
                 .build();
     }
