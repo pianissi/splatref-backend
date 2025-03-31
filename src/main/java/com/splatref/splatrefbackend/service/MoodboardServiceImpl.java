@@ -42,7 +42,7 @@ public class MoodboardServiceImpl implements MoodboardService {
         );
 
         Moodboard savedMoodboard = moodboardRepository.save(moodboard);
-        // 6 map image object to dto
+
         MoodboardDto response = new MoodboardDto(
                 savedMoodboard.getMoodboardId(),
                 savedMoodboard.getName(),
@@ -97,7 +97,7 @@ public class MoodboardServiceImpl implements MoodboardService {
     }
 
     @Override
-//    @PreAuthorize("#username == authentication.principal.username")
+    @PreAuthorize("#username == authentication.principal.username")
     public List<MoodboardMiniDto> getUserMoodboards(String username) {
         List<Moodboard> moodboards = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username)).getMoodboards();
 
@@ -123,10 +123,7 @@ public class MoodboardServiceImpl implements MoodboardService {
         if (!userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username)).getUserId().equals(moodboard.getOwner().getUserId())) {
             throw new AccessDeniedException("Username: " + username + ", does not own moodboard with id: " + moodboardId);
         }
-//
-//        imageService.deleteImage(moodboard.getThumbnail().getImageId());
 
-        // TODO, delete images in moodboard
 
         moodboardRepository.delete(moodboard);
 
